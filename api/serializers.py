@@ -30,14 +30,34 @@ class MemberSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at']
 
 
+class UpdateProfileSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150, min_length=3, required=False)
+    password = serializers.CharField(max_length=128, min_length=6, write_only=True, required=False)
+
+    def validate_username(self, value):
+        request = self.context.get('request')
+        if request and request.user:
+            if Member.objects.filter(username=value).exclude(id=request.user.id).exists():
+                raise serializers.ValidationError("Username already exists")
+        return value
+
+
 class MessageSerializer(serializers.ModelSerializer):
-    author = MemberSerializer(read_only=True)
+    username = serializers.CharField(source='author.username', read_only=True)
 
     class Meta:
         model = Message
-        fields = ['id', 'text', 'author', 'created_at']
-        read_only_fields = ['id', 'author', 'created_at']
+        fields = ['id', 'username', 'text', 'created_at']
+        read_only_fields = ['id', 'username', 'created_at']
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
         return super().create(validated_data)
+
+
+class CreateMessageSerializer(serializers.Serializer):
+    text = serializers.CharField(max_length=5000, min_length=1)
+
+    def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
+        return Message.objects.create(**validated_data)
