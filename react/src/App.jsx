@@ -6,6 +6,7 @@ import './App.css';
 import { Home } from './components/Home';
 import RegisterPage from './components/Auth/RegisterPage';
 import LoginPage from './components/Auth/LoginPage';
+import ChatPage from './components/Chat/ChatPage';
 import { useAuth } from './context/AuthContext';
 
 function App() {
@@ -37,7 +38,7 @@ function App() {
         />
         <Route 
           path="/chat" 
-          element={isAuthenticated ? <div>Chat Page (Coming Soon)</div> : <Navigate to="/login" replace />} 
+          element={isAuthenticated ? <ChatPage /> : <Navigate to="/login" replace />} 
         />
       </Routes>
     </ErrorBoundary>
