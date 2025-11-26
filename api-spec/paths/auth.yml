@@ -1,0 +1,123 @@
+register:
+  post:
+    summary: Register new user
+    description: Create a new user account
+    tags:
+      - Authentication
+    x-isSecure: false
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+                minLength: 3
+                maxLength: 150
+                description: Unique username
+              password:
+                type: string
+                minLength: 6
+                description: User password
+    responses:
+      '201':
+        description: User successfully registered
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: User ID
+                username:
+                  type: string
+                  description: Username
+                message:
+                  type: string
+                  description: Success message
+      '400':
+        description: Bad request (validation error or username already exists)
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/Error'
+
+login:
+  post:
+    summary: Login user
+    description: Authenticate user and receive access token
+    tags:
+      - Authentication
+    x-isSecure: false
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+                description: Username
+              password:
+                type: string
+                description: User password
+    responses:
+      '200':
+        description: Successfully authenticated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Authentication token
+                id:
+                  type: integer
+                  description: User ID
+                username:
+                  type: string
+                  description: Username
+      '401':
+        description: Invalid credentials
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/Error'
+
+logout:
+  post:
+    summary: Logout user
+    description: Logout current user and invalidate token
+    tags:
+      - Authentication
+    x-isSecure: true
+    security:
+      - BearerAuth: []
+    responses:
+      '200':
+        description: Successfully logged out
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Success message
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/Error'

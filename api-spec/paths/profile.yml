@@ -1,0 +1,65 @@
+profile:
+  get:
+    summary: Get user profile
+    description: Retrieve current user profile information
+    tags:
+      - Profile
+    x-isSecure: true
+    security:
+      - BearerAuth: []
+    responses:
+      '200':
+        description: User profile retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/User'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/Error'
+  put:
+    summary: Update user profile
+    description: Update current user profile information
+    tags:
+      - Profile
+    x-isSecure: true
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                minLength: 3
+                maxLength: 150
+                description: New username
+              password:
+                type: string
+                minLength: 6
+                description: New password
+    responses:
+      '200':
+        description: Profile updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/User'
+      '400':
+        description: Bad request (validation error or username already exists)
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../openapi.yml#/components/schemas/Error'
